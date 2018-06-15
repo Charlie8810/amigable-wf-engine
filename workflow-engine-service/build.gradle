@@ -1,0 +1,24 @@
+group 'io.amigable'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+task runApp(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'io.amigable.wfengine.service.Main'
+    args ''
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+
+}

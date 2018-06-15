@@ -1,0 +1,3 @@
+rootProject.name = 'workflow-engine-service'
+include 'data-process'
+
