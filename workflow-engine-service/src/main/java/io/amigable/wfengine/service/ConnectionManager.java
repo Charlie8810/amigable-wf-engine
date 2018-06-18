@@ -24,7 +24,7 @@ public class ConnectionManager {
     }
 
     private Connection doConnect() throws  SQLException{
-        return DriverManager.getConnection("jdbc:mysql://172.21.103.73/amigable_wf?" +
+        return DriverManager.getConnection("jdbc:mysql://192.168.10.10/amigable_wf?" +
                 "user=usr_amigable&password=amigable.01&useSSL=false");
     }
 

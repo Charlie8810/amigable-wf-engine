@@ -1,5 +1,7 @@
 package io.amigable.wfengine.service.entity;
 
+import java.sql.Date;
+
 public class Condition {
 
     private String attributeName;
@@ -62,7 +64,7 @@ public class Condition {
                     returnValue = ((double)x > (double)y);
                 }
                 else if(x instanceof java.sql.Date && y instanceof java.sql.Date){
-                    returnValue = ((double)x > (double)y);
+                    returnValue = ((java.sql.Date) x).compareTo((java.sql.Date)y) > 0;
                 }
                 break;
             case ">=":
@@ -75,6 +77,9 @@ public class Condition {
                 else if(x instanceof Double && y instanceof Double){
                     returnValue = ((double)x >= (double)y);
                 }
+                else if(x instanceof java.sql.Date && y instanceof java.sql.Date){
+                    returnValue = ((java.sql.Date) x).compareTo((java.sql.Date)y) >= 0;
+                }
                 break;
             case "<":
                 if(x instanceof Integer && y instanceof Integer){
@@ -86,6 +91,9 @@ public class Condition {
                 else if(x instanceof Double && y instanceof Double){
                     returnValue = ((double)x < (double)y);
                 }
+                else if(x instanceof java.sql.Date && y instanceof java.sql.Date){
+                    returnValue = ((java.sql.Date) x).compareTo((java.sql.Date)y) < 0;
+                }
                 break;
             case "<=":
                 if(x instanceof Integer && y instanceof Integer){
@@ -96,6 +104,9 @@ public class Condition {
                 }
                 else if(x instanceof Double && y instanceof Double){
                     returnValue = ((double)x <= (double)y);
+                }
+                else if(x instanceof java.sql.Date && y instanceof java.sql.Date){
+                    returnValue = ((java.sql.Date) x).compareTo((java.sql.Date)y) <= 0;
                 }
                 break;
             case "<>":

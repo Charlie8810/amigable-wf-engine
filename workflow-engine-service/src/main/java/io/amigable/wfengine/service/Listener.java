@@ -1,5 +1,7 @@
 package io.amigable.wfengine.service;
 
+import com.sun.jmx.snmp.internal.SnmpMsgProcessingSubSystem;
+import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
 import io.amigable.wfengine.service.entity.*;
 import javafx.concurrent.Task;
 
@@ -27,6 +29,7 @@ public class Listener {
             return;
         }
 
+        /*Obtain task metadata of transit*/
         TransitionStep transitMetaData = this.transitionStepMetaData(processTransitionId, processDefinitionId);
 
         /*If is end step type, do close de processInstance*/
@@ -34,6 +37,7 @@ public class Listener {
             this.updateProcessInstanceStatus(processInstanceId, InstanceState.TERMINATED);
         }else{
             /*Insert task */
+            /*TODO Revisar bien esto al parecer no tiene logica alguna*/
             TaskEntity taskTransit = new TaskEntity();
             taskTransit.setProcessInstanceId(processInstanceId);
             taskTransit.setProcessTransitionId(processTransitionId);
@@ -45,13 +49,13 @@ public class Listener {
             /*Fire Event on Init*/
 
             /*Check Step Conditions hint:processTransitionCondition*/
-            if(this.evaluateTransitionStepConditions(processTransitionId,processDefinitionId,processInstanceId)){
-                TransitionStep nextTransitMetaData = this.findNextStep(processTransitionId, processDefinitionId);
-                this.activateTransitionStep(nextTransitMetaData.getTransitionStepId(), processInstanceId, processDefinitionId);
+            ArrayList<ProcessTransitionConditionEntity> conditionList = this.listTransitionsConditions(processTransitionId, processDefinitionId);
+            for(ProcessTransitionConditionEntity entity : conditionList){
+                if(this.evaluateTransitionStepConditions(entity.getConditionSetId(),processDefinitionId,processInstanceId)){
+                    this.activateTransitionStep(entity.getNextProcessTransitionId(), processInstanceId, processDefinitionId);
+                }
             }
         }
-
-
     }
 
     public boolean isActiveTransitionStep(int processTransitionId, int processInstanceId,int processDefinitionId ) throws SQLException {
@@ -136,7 +140,6 @@ public class Listener {
         String qry = String.format("CALL sp_transitionStepConditionList(%1$d, %2$d, %3$d)", processTransitionId, processInstanceId, processDefinitionId);
         ResultSet rs = this.dbAccess.executeQuery(qry);
         ConditionSet rootSet = new ConditionSet();
-        rootSet.setSetId(4);
         while(rs.next()){
             String kind = rs.getString("kind");
             String parentKind = rs.getString("parentKind");
@@ -259,6 +262,22 @@ public class Listener {
 
     private String parseJavaScriptLang(String input){
         return input.replace("AND","&&").replace("OR","||").replace(" = "," === ");
+    }
+
+    private ArrayList<ProcessTransitionConditionEntity> listTransitionsConditions(int processTransitionId, int processDefinitionId)throws SQLException{
+        String qry = String.format("CALL sp_listProcessTransitionCondition(%1$d, %2$d)", processTransitionId, processDefinitionId);
+        ResultSet rs = this.dbAccess.executeQuery(qry);
+        ArrayList<ProcessTransitionConditionEntity> out = new ArrayList<ProcessTransitionConditionEntity>();
+        while(rs.next()){
+            ProcessTransitionConditionEntity item = new ProcessTransitionConditionEntity();
+            item.setId(rs.getInt("id"));
+            item.setConditionSetId(rs.getInt("conditionSetId"));
+            item.setProcessTransitionId(rs.getInt("processTransitionId"));
+            item.setTransitionEvent(rs.getString("transitionEvent"));
+            item.setNextProcessTransitionId(rs.getInt("nextProcessTransitionId"));
+            out.add(item);
+        }
+        return out;
     }
 
 }
