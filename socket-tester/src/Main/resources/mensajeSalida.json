@@ -1,12 +1,8 @@
 {
-  "instanceNumber": 20180610012323,
-  "stepId": 1,
+  "instanceNumber": 21551651616542,
+  "stepId": 8,
   "processId": 1,
-  "description": "17042783-1 Carlos Pradenas, Folio Credito: 21551651616541",
+  "description": "",
   "event":"03 - completeTask",
-  "userId": 3,
-  "setVariables": [
-    {"sysname":"ES_REGIONES", "rawValue": "true"},
-    {"sysname":"IN_STOCK", "rawValue":"false"}
-  ]
+  "userId": 3
 }

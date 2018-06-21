@@ -18,7 +18,8 @@ public enum ResultCode {
     ErrorOnActivateTaskInstance (11),
     ErrorInDataBaseConnection (12),
     TaskRulesWithoutAdvanceQualification (13),
-    Exception (14);
+    Exception (14),
+    ErrorStepIsClosed(15);
 
 
     private final int resultCode;
@@ -35,7 +36,7 @@ public enum ResultCode {
     }
 
     public String resultDescription(String location){
-        String[] results = new String[15];
+        String[] results = new String[16];
         if(location.contains("es")){
             results[0] = "Esquema Invalido";
             results[1] = "Proceso Ejecutado Correctamente";
@@ -52,6 +53,7 @@ public enum ResultCode {
             results[12] = "reglas asociadas a la tarea sin calificacion de avance";
             results[13] = "Error de conecccion a base de datos";
             results[14] = "Excepcion";
+            results[15] = "Etapa ya Cerrada";
         }
         return results[this.resultCode];
     }

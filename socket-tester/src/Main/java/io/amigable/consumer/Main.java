@@ -19,33 +19,33 @@ public class Main {
 
             //System.out.println(String.format("%03d", 11));
 
+            for(int i = 1; i<=5; i++) {
+                System.out.println("Solicitud: " + i);
 
+                Socket s = new Socket("localhost", 1802);
 
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                InputStream strm = loader.getResourceAsStream("mensajeSalida.json");
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-            Socket s = new Socket("localhost", 1802);
+                int nRead;
+                byte[] data = new byte[16384];
+                while ((nRead = strm.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, nRead);
+                }
+                buffer.flush();
 
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            InputStream strm = loader.getResourceAsStream("mensajeSalida.json");
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                byte[] st = buffer.toByteArray();
 
-            int nRead;
-            byte[] data = new byte[16384];
-            while ((nRead = strm.read(data, 0, data.length)) != -1) {
-                buffer.write(data, 0, nRead);
-            }
-            buffer.flush();
+                DataInputStream in = new DataInputStream(s.getInputStream());
+                DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
-            byte[] st = buffer.toByteArray();
-
-            DataInputStream in = new DataInputStream(s.getInputStream());
-            DataOutputStream out = new DataOutputStream(s.getOutputStream());
-
-            out.writeInt(st.length);
-            out.write(st);
+                out.writeInt(st.length);
+                out.write(st);
 
             /*get response*/
-            //boolean response = in.readBoolean();
-            //System.out.println(response);
+                //boolean response = in.readBoolean();
+                //System.out.println(response);
 
 
             /*if (args.length != 1) {
@@ -59,9 +59,10 @@ public class Main {
                         p, p.surfaceWeight(mass));
             */
 
-            in.close();
-            out.close();
-            s.close();
+                in.close();
+                out.close();
+                s.close();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

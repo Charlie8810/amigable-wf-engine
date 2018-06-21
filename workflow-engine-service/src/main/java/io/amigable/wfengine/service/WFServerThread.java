@@ -21,7 +21,7 @@ public class WFServerThread extends Thread {
         super("WFServerThread");
         this.socket = socket;
         this.manager = new ConnectionManager();
-        System.out.println("B: " + this.getId());
+        //System.out.println("B: " + this.getId());
     }
 
     @Override
@@ -38,15 +38,15 @@ public class WFServerThread extends Thread {
                 String m = new String(message);
                 boolean isValid = JsonSchemaValidator.isValidInput(m);
                 if (isValid) {
-                    System.out.println("Esquema Valido");
+                    //System.out.println("Esquema Valido");
                     ObjectMapper om = new ObjectMapper();
                     EntryInstance entryInstance = om.readValue(m, EntryInstance.class);
-                    System.out.println("Entrada: " + entryInstance.toString());
+                    //System.out.println("Entrada: " + entryInstance.toString());
 
                     Listener listener = new Listener(this.manager);
 
                     InputEventResult<EntryInstance> result = listener.processInputEvent(entryInstance);
-                    System.out.println(result.toString());
+                    System.out.println(result.toString() + " | Thread: " + this.getId());
                 }
             }
 

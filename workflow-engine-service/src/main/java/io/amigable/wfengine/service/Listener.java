@@ -31,10 +31,10 @@ public class Listener {
 
     public void activateTransitionStep(int processTransitionId, int processInstanceId, int processDefinitionId, int userId) throws SQLException, Exception{
 
-        System.out.println("Activando Etapa");
+        //System.out.println("Activando Etapa");
         /*Assurance of transitionStep is not Activated*/
         if(this.isActiveTransitionStep(processTransitionId,processInstanceId,processDefinitionId)){
-            System.out.println("Etapa ya Activa");
+            //System.out.println("Etapa ya Activa");
             return;
         }
 
@@ -69,13 +69,16 @@ public class Listener {
     }
 
     public ResultCode completeTransitionStep(int processTransitionId, int processInstanceId, int processDefinitionId, int taskId, int userId)throws SQLException, Exception{
-        System.out.println("Completando Etapa");
+        //System.out.println("Completando Etapa");
         ResultCode retVal = ResultCode.Success;
+        if(this.isClosedTask(taskId, processInstanceId, processDefinitionId)){
+            return ResultCode.ErrorStepIsClosed;
+        }
         TransitionStep transitMetaData = this.transitionStepMetaData(processTransitionId, processDefinitionId);
         TaskEntity taskTransit = this.getTask(taskId);
         if(taskTransit.getProcessTransitionId() != processTransitionId){
-            retVal = ResultCode.ErrorOnCompleteTask;
-            throw new Exception("La tarea ingresada no concuerda con su asignacion de transito");
+            return ResultCode.ErrorOnCompleteTask;
+            //throw new Exception("La tarea ingresada no concuerda con su asignacion de transito");
         }
 
         boolean isJoinStep = transitMetaData.getStepTypeId() == StepType.JUNCTION;
@@ -84,25 +87,39 @@ public class Listener {
         /*Check Step Conditions*/
         ArrayList<ProcessTransitionConditionEntity> conditionList = this.listTransitionsConditions(processTransitionId, processDefinitionId);
         int trueCount = 0;
-        System.out.println(conditionList.size());
+        //System.out.println(conditionList.size());
         for(ProcessTransitionConditionEntity entity : conditionList){
-            System.out.println(entity.toString());
+            //System.out.println(entity.toString());
             boolean resultCondition = this.evaluateTransitionStepConditions(entity.getConditionSetId(),processDefinitionId,processInstanceId);
             if(resultCondition){
                 trueCount++;
                 if(entity.getNextProcessTransitionId() > 0){
-                    this.activateTransitionStep(entity.getNextProcessTransitionId(), processInstanceId, processDefinitionId, userId);
+                    try {
+                        this.activateTransitionStep(entity.getNextProcessTransitionId(), processInstanceId, processDefinitionId, userId);
+                    }catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
         if((isJoinStep && trueCount > 0) || (isJoinStep && conditionList.isEmpty())){
-            this.updateTaskStatus(taskTransit.getId(), TaskState.TERMINATED);
+            this.updateTaskStatus(taskTransit.getId(), TaskState.TERMINATED, userId);
         }else if(trueCount > 0 || conditionList.isEmpty()){
             this.updateTaskStatus(taskTransit.getId(), TaskState.TERMINATED, userId);
         }
 
         if(isJoinStep && !conditionList.isEmpty() && trueCount == 0){
             retVal  = ResultCode.TaskRulesWithoutAdvanceQualification;
+        }
+        return retVal;
+    }
+
+    private boolean isClosedTask(int taskId, int processInstanceId, int processDefinitionId)throws SQLException{
+        String query = String.format("CALL sp_isClosedTask(%1$d, %2$d, %3$d);", taskId, processInstanceId, processDefinitionId);
+        ResultSet rs = this.dbAccess.executeQuery(query);
+        boolean retVal = true;
+        if(rs.next()){
+            retVal = rs.getBoolean("isClosedTask");
         }
         return retVal;
     }
@@ -242,57 +259,65 @@ public class Listener {
 
     }
 
-    public boolean evaluateTransitionStepConditions(int processTransitionId, int processDefinitionId, int processInstanceId) throws SQLException, Exception{
+    public boolean evaluateTransitionStepConditions(int conditionSetId, int processDefinitionId, int processInstanceId) throws SQLException, Exception{
         /*TODO rename this procedure with the proper nomenclature: "sp_listTransitionConditions" */
-        String qry = String.format("CALL sp_transitionStepConditionList(%1$d, %2$d, %3$d)", processTransitionId, processInstanceId, processDefinitionId);
+        String qry = String.format("CALL sp_transitionStepConditionList(%1$d, %2$d, %3$d)", conditionSetId, processInstanceId, processDefinitionId);
+        //System.out.println(qry);
         ResultSet rs = this.dbAccess.executeQuery(qry);
         ConditionSet rootSet = new ConditionSet();
         while(rs.next()){
             String kind = rs.getString("kind");
             String parentKind = rs.getString("parentKind");
-            if(kind.equals("expression")){
-                int parentWrapper = rs.getInt("parentSetId");
-                Condition conditional = new Condition();
-                conditional.setA(rs.getObject("attributeValue", this.setDataType(rs.getString("dataType"))));
-                conditional.setB(rs.getObject("conditionEvalValue", this.setDataType(rs.getString("dataType"))));
-                conditional.setAttributeName(rs.getString("attributName"));
-                conditional.setOperator(rs.getString("conditionOperator"));
 
-                ConditionSet cluster = new ConditionSet();
-                cluster.setSetId(rs.getInt("id"));
-                cluster.setParentSetId(rs.getInt("parentSetId"));
-                cluster.setOperator(rs.getString("setOperator"));
-                cluster.setConditionEval(conditional);
+            String dataType = rs.getString("dataType");
+            if(dataType != null) {
 
-                if(parentKind.equals("wrapper")){
-                    ConditionSet parent = this.findWrapperInChilds(rootSet,parentWrapper);
-                    parent.getChilds().add(cluster);
-                }else if(parentKind.equals("root")){
-                    rootSet.getChilds().add(cluster);
-                }
+                if (kind.equals("expression")) {
+                    int parentWrapper = rs.getInt("parentSetId");
+                    Condition conditional = new Condition();
+                    conditional.setA(rs.getObject("attributeValue", this.setDataType(dataType)));
+                    conditional.setB(rs.getObject("conditionEvalValue", this.setDataType(dataType)));
+                    conditional.setAttributeName(rs.getString("attributName"));
+                    conditional.setOperator(rs.getString("conditionOperator"));
 
+                    ConditionSet cluster = new ConditionSet();
+                    cluster.setSetId(rs.getInt("id"));
+                    cluster.setParentSetId(rs.getInt("parentSetId"));
+                    cluster.setOperator(rs.getString("setOperator"));
+                    cluster.setConditionEval(conditional);
 
-            }else if(kind.equals("wrapper")){
-                ConditionSet cluster = new ConditionSet();
-                cluster.setSetId(rs.getInt("id"));
-                cluster.setParentSetId(rs.getInt("parentSetId"));
-                cluster.setOperator(rs.getString("setOperator"));
+                    if (parentKind.equals("wrapper")) {
+                        ConditionSet parent = this.findWrapperInChilds(rootSet, parentWrapper);
+                        parent.getChilds().add(cluster);
+                    } else if (parentKind.equals("root")) {
+                        rootSet.getChilds().add(cluster);
+                    }
 
 
-                if(parentKind.equals("wrapper")){
-                    ConditionSet parent = this.findWrapperInChilds(rootSet,cluster);
-                    parent.getChilds().add(cluster);
-                }else if(parentKind.equals("root")){
-                    rootSet.getChilds().add(cluster);
-                }
+                } else if (kind.equals("wrapper")) {
+                    ConditionSet cluster = new ConditionSet();
+                    cluster.setSetId(rs.getInt("id"));
+                    cluster.setParentSetId(rs.getInt("parentSetId"));
+                    cluster.setOperator(rs.getString("setOperator"));
 
-            }else{
+
+                    if (parentKind.equals("wrapper")) {
+                        ConditionSet parent = this.findWrapperInChilds(rootSet, cluster);
+                        parent.getChilds().add(cluster);
+                    } else if (parentKind.equals("root")) {
+                        rootSet.getChilds().add(cluster);
+                    }
+
+                } else {
                 /*fire error*/
-                throw new Exception("Error charly-500: te entry not in expression or wrapper");
+                    throw new Exception("the entry not in expression or wrapper");
+                }
+            }else {
+                throw new Exception("No hay attributos para evaluar");
             }
         }
-        System.out.println("|FORMULA======================================" );
-        System.out.println(this.parseJavaScriptLang(rootSet.toString()));
+        //System.out.println("|FORMULA======================================" );
+        //System.out.println(this.parseJavaScriptLang(rootSet.toString()));
 
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
@@ -304,8 +329,8 @@ public class Listener {
             result = false;
             //System.out.println("Error: " + sEx.getMessage());
         }
-        System.out.println("|RESULTADO======================================" );
-        System.out.println(result);
+        //System.out.println("|RESULTADO======================================" );
+        //System.out.println(result);
 
 
         return result;
@@ -482,7 +507,7 @@ public class Listener {
 
         switch(eventTypeId){
             case InputEventType.ACTIVATE_INSTANCE:
-                System.out.println("Activating Instance");
+                //System.out.println("Activating Instance");
                 try {
                     processInstance = new ProcessInstanceEntity(
                             instance.getProcessId(),
@@ -505,7 +530,7 @@ public class Listener {
                 break;
 
             case InputEventType.ACTIVATE_TASK:
-                System.out.println("Activating Task");
+                //System.out.println("Activating Task");
                 try {
                     processInstance = this.getProcessInstance(instance.getInstanceNumber());
                     taskTransition = this.getPrcessTransition(instance.getStepId(), processInstance.getId(), processInstance.getProcessDefinitionId());
@@ -522,7 +547,7 @@ public class Listener {
                 break;
 
             case InputEventType.COMPLETE_TASK:
-                System.out.println("Completing Task");
+                //System.out.println("Completing Task");
                 try {
                     processInstance = this.getProcessInstance(instance.getInstanceNumber());
                     taskTransition = this.getPrcessTransition(instance.getStepId(), processInstance.getId(), processInstance.getProcessDefinitionId());
@@ -530,7 +555,7 @@ public class Listener {
                     if (taskTransition != null) {
                         retVal.parseResultCode(this.completeTransitionStep(taskTransition.getId(), processInstance.getId(), processInstance.getProcessDefinitionId(), instance.getStepId(), instance.getUserId()), "es-es");
                     }else{
-                        throw new Exception("Dejando la mea caga");
+                        retVal.parseResultCode(ResultCode.ErrorInstanceStepNotEnabled,"es-cl");
                     }
                 }catch(Exception e){
                     e.printStackTrace();
