@@ -12,7 +12,7 @@ repositories {
 task runApp(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'io.amigable.consumer.Main'
-    args ''
+    args '1'
 }
 
 

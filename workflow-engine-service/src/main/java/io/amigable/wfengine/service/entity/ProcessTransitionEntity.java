@@ -11,11 +11,38 @@ public class ProcessTransitionEntity {
     private int slaValue;
     private int sequence;
     private boolean hasDelay;
-    private int delaySlqTypeId;
+    private int delaySlaTypeId;
     private int delayValue;
     private boolean active;
 
     public ProcessTransitionEntity(){}
+
+    public ProcessTransitionEntity(int id,
+                                   int processDefinitionId,
+                                   int stepId,
+                                   int responsibleId,
+                                   String responsibleType,
+                                   int slaTypeId,
+                                   int slaValue,
+                                   int sequence,
+                                   boolean hasDelay,
+                                   int delaySlaTypeId,
+                                   int delayValue,
+                                   boolean active){
+
+        this.id=id;
+        this.processDefinitionId=processDefinitionId;
+        this.stepId=stepId;
+        this.responsibleId=responsibleId;
+        this.responsibleType=responsibleType;
+        this.slaTypeId=slaTypeId;
+        this.slaValue=slaValue;
+        this.sequence=sequence;
+        this.hasDelay=hasDelay;
+        this.delaySlaTypeId=delaySlaTypeId;
+        this.delayValue=delayValue;
+        this.active=active;
+    }
 
 
     public int getId() {
@@ -90,12 +117,12 @@ public class ProcessTransitionEntity {
         this.hasDelay = hasDelay;
     }
 
-    public int getDelaySlqTypeId() {
-        return delaySlqTypeId;
+    public int getDelaySlaTypeId() {
+        return delaySlaTypeId;
     }
 
-    public void setDelaySlqTypeId(int delaySlqTypeId) {
-        this.delaySlqTypeId = delaySlqTypeId;
+    public void setDelaySlqTypeId(int delaySlaTypeId) {
+        this.delaySlaTypeId = delaySlaTypeId;
     }
 
     public int getDelayValue() {
@@ -112,6 +139,12 @@ public class ProcessTransitionEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+
+    @Override
+    public String toString(){
+        return "Id Etapa: " + this.stepId != null ? String.valueOf(this.stepId) : "No existe";
     }
 
 }

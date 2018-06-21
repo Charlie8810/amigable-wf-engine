@@ -20,5 +20,6 @@ dependencies {
     compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
     compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
-
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
+    compile group: "com.github.java-json-tools", name: "json-schema-validator", version: "2.2.10"
 }

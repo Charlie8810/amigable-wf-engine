@@ -82,5 +82,8 @@ public class ConnectionManager {
         return statement.executeQuery(query);
     }
 
+    public void doClose() throws SQLException{
+        this.dbConnection.close();
+    }
 }
 

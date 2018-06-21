@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "amigable",
+  "description": "Amigable WF Schema In Validator",
+  "type": "object",
+  "properties": {
+    "instanceNumber": {
+      "type": "number"
+    },
+    "stepId": {
+      "type": "integer"
+    },
+    "processId": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "01 - activateInstance",
+        "02 - activateTask",
+        "03 - completeTask",
+        "04 - abortInstance",
+        "05 - reactivateInstance"
+      ]
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "setVariables": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "object" },
+      "uniqueItems": true
+    }
+  },
+  "required": [ "instanceNumber", "stepId", "processId", "event", "userId" ],
+  "additionalProperties": false
+}

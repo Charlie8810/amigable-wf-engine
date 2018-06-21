@@ -15,9 +15,14 @@ public class Main {
     public static void main(String[] args){
 
         try{
+
+
+            //System.out.println(String.format("%03d", 11));
+
+
+
+
             Socket s = new Socket("localhost", 1802);
-            //PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
-            //BufferedReader entrada = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             InputStream strm = loader.getResourceAsStream("mensajeSalida.json");
@@ -35,32 +40,29 @@ public class Main {
             DataInputStream in = new DataInputStream(s.getInputStream());
             DataOutputStream out = new DataOutputStream(s.getOutputStream());
 
-
-
             out.writeInt(st.length);
             out.write(st);
 
+            /*get response*/
+            //boolean response = in.readBoolean();
+            //System.out.println(response);
 
-            //System.out.println(in.readChar());
+
+            /*if (args.length != 1) {
+                System.err.println("Usage: java Planet <earth_weight>");
+                System.exit(-1);
+            }
+            double earthWeight = Double.parseDouble(args[0]);
+            double mass = earthWeight/Planet.EARTH.surfaceGravity();
+            for (Planet p : Planet.values())
+                System.out.printf("Your weight on %s is %f%n",
+                        p, p.surfaceWeight(mass));
+            */
+
             in.close();
             out.close();
-            //FileInputStream fis = new FileInputStream(new File("/resources/mensajeSalida.json"));
-            //System.out.println(strm);
-            //String inputLine = entrada.readLine();
-            //pw.println(strm);
-            //pw.
-            //System.out.println(inputLine);
-            /*while ((inputLine = entrada.readLine()) != null) {
-                System.out.println(inputLine);
-                //pw.println("OK");
-            }*/
-            //inputLine = entrada.readLine();
-            //System.out.println(inputLine);
-
-            //entrada.close();
-            //pw.close();
             s.close();
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
 
