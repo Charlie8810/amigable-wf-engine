@@ -1,0 +1,36 @@
+{
+  "name": "Amigable-wf-designer",
+  "version": "1.0.0",
+  "description": "Amigable WF designer",
+  "scripts": {
+    "development":"webpack",
+    "dev": "npm run development"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/capradenas/amigable-wf-engine.git"
+  },
+  "author": "@capradenas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/capradenas/amigable-wf-engine/issues"
+  },
+  "homepage": "https://github.com/capradenas/amigable-wf-engine#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "materialize-css": "^1.0.0-rc.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "copy-webpack-plugin": "^4.5.1",
+    "css-loader": "^0.28.11",
+    "style-loader": "^0.21.0"
+  }
+}

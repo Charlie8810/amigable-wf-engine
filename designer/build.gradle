@@ -19,6 +19,9 @@ group = 'io.amigable.wfengine'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
+ext["thymeleaf.version"] = "3.0.9.RELEASE"
+ext["thymeleaf-layout-dialect.version"] = "2.0.3"
+
 repositories {
 	mavenCentral()
 }
@@ -26,9 +29,11 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-security')
+	//compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	runtime('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+    runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('mysql:mysql-connector-java')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')

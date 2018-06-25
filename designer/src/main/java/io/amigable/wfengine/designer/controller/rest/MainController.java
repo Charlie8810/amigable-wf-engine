@@ -1,17 +1,16 @@
-package io.amigable.wfengine.designer.rest;
+package io.amigable.wfengine.designer.controller.rest;
 
 import io.amigable.wfengine.designer.model.*;
 import io.amigable.wfengine.designer.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+//import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
-@Controller
-@RequestMapping(path="/demo")
+//@Controller
+@RequestMapping(path="/test")
 public class MainController {
 
     @Autowired
