@@ -1,0 +1,72 @@
+
+/*Footer fijo*/
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/*Preloader*/
+
+.preload-line-title
+{
+	height: 23px;
+	margin: 3px;
+	width: 200px;
+	animation: pulse 1s infinite ease-in-out;
+	-webkit-animation:pulse 1s infinite ease-in-out;
+}
+
+.preload-line-content
+{
+	height: 23px;
+	margin: 3px;
+	width: 350px;
+	animation: pulse 1s infinite ease-in-out;
+	-webkit-animation:pulse 1s infinite ease-in-out;
+}
+
+.preload-circle
+{
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    overflow: hidden;
+    left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    animation: pulse 1s infinite ease-in-out;
+    -webkit-animation:pulse 1s infinite ease-in-out;
+}
+
+
+
+@keyframes pulse
+{
+	0%{
+		background-color: rgba(165,165,165,.1);
+	}
+	50%{
+		background-color: rgba(165,165,165,.3);
+	}
+	100%{
+		background-color: rgba(165,165,165,.1);
+	}
+}
+@-webkit-keyframes pulse
+{
+	0%{
+		background-color: rgba(165,165,165,.1);
+	}
+	50%{
+		background-color: rgba(165,165,165,.3);
+	}
+	100%{
+		background-color: rgba(165,165,165,.1);
+	}
+}

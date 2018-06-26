@@ -1,5 +1,6 @@
 import 'materialize-css';
 
+
 /*Init  graphics interactions*/
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -10,3 +11,5 @@ document.addEventListener('DOMContentLoaded', function() {
     M.Carousel.init(document.querySelectorAll('.carousel'), { fullWidth: true, indicators: true });
 
 });
+
+
