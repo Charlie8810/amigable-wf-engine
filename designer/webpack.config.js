@@ -4,7 +4,9 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     entry: {
        app: './src/main/js/app.js',
-       process: './src/main/js/entries/process.js'
+       process: './src/main/js/entries/process.js',
+       'process.detail': './src/main/js/entries/process.detail.js'
+
     },
     mode: 'development',
     devtool: 'sourcemaps',

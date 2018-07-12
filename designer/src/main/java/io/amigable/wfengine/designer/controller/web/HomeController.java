@@ -1,9 +1,11 @@
 package io.amigable.wfengine.designer.controller.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping(path="/wf-designer")
 public class HomeController {
 
     @RequestMapping(value="/")
@@ -20,4 +22,11 @@ public class HomeController {
     public String process() {
         return "process";
     }
+
+
+    @RequestMapping(value="/procesos/{id}")
+    public String processDetail(@PathVariable("id") int id) {
+        return "processDetail";
+    }
+
 }
